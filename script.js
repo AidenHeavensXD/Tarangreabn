@@ -1,53 +1,48 @@
-document.addEventListener('DOMContentLoaded', (event) => {
-    const timetable = document.getElementById('timetable');
+// ข้อมูลตารางเรียน: วิชาและเวลา (ตามที่แก้ไขล่าสุด)
+const schedule = [
+    { time: "08:00 - 08:50", Mon: "โฮมรูม", Tue: "ไทย", Wed: "คณิต", Thu: "วิทย์", Fri: "อังกฤษ" },
+    { time: "08:50 - 09:40", Mon: "คณิต", Tue: "สังคม", Wed: "ไทย", Thu: "สุขศึกษา", Fri: "ศิลปะ" },
+    { time: "09:40 - 10:30", Mon: "วิทย์", Tue: "ศิลปะ", Wed: "คณิต", Thu: "อังกฤษ", Fri: "คอมพิวเตอร์" },
+    { time: "10:30 - 11:10", Mon: "พัก", Tue: "พัก", Wed: "พัก", Thu: "พัก", Fri: "พัก" },
+    { time: "11:10 - 12:00", Mon: "พักกลางวัน", Tue: "พักกลางวัน", Wed: "พักกลางวัน", Thu: "พักกลางวัน", Fri: "พักกลางวัน" },
+    { time: "12:00 - 12:50", Mon: "อังกฤษ", Tue: "วิทย์", Wed: "สังคม", Thu: "ไทย", Fri: "สังคม" },
+    { time: "12:50 - 13:40", Mon: "พละ", Tue: "คอมพิวเตอร์", Wed: "พละ", Thu: "แนะแนว", Fri: "พละ" },
+    { time: "13:40 - 14:30", Mon: "แนะแนว", Tue: "ลูกเสือ", Wed: "ชมรม", Thu: "พละ", Fri: "ว่าง" },
+];
 
-    function highlightCurrentClass() {
-        const now = new Date();
-        const day = now.getDay(); // 0=อาทิตย์, 1=จันทร์, ..., 5=ศุกร์, 6=เสาร์
-        const hours = now.getHours();
-        const minutes = now.getMinutes();
-        const currentTimeInMinutes = hours * 60 + minutes;
+const daysOfWeek = ["Mon", "Tue", "Wed", "Thu", "Fri"];
+// new Date().getDay() จะคืนค่า 0 (อาทิตย์) ถึง 6 (เสาร์)
+// เราต้องการ 1=จันทร์, 2=อังคาร, ..., 5=ศุกร์
+const todayIndex = new Date().getDay(); 
 
-        // ลบคลาส 'current-class' ออกจากเซลล์ทั้งหมดก่อน
-        document.querySelectorAll('.current-class').forEach(cell => {
-            cell.classList.remove('current-class');
-        });
+const tbody = document.getElementById('timetable').getElementsByTagName('tbody')[0];
 
-        // ตรวจสอบเฉพาะวันจันทร์ถึงศุกร์ (1-5)
-        if (day >= 1 && day <= 5) {
-            // กำหนดเวลาเริ่มต้นของแต่ละคาบเรียนในหน่วยนาที (รวมเวลาพัก)
-            // 08:40, 09:30, 10:20, 11:10 (พัก), 12:00 (กลางวัน), 13:00, 13:50, 14:40
-            const classStartTimes = [
-                { start: 8 * 60 + 40, end: 9 * 60 + 30, cellIndex: 1, dayId: 1 }, // คาบ 1 (จ.มี colspan)
-                { start: 9 * 60 + 30, end: 10 * 60 + 20, cellIndex: 3, dayId: 1 }, // คาบ 2
-                { start: 10 * 60 + 20, end: 11 * 60 + 10, cellIndex: 4, dayId: 1 }, // คาบ 3
-                // พัก 11:10 - 12:00
-                // กลางวัน 12:00 - 13:00
-                { start: 13 * 60 + 0, end: 13 * 60 + 50, cellIndex: 6, dayId: 1 }, // คาบ 5
-                { start: 13 * 60 + 50, end: 14 * 60 + 40, cellIndex: 7, dayId: 1 }, // คาบ 7
-                { start: 14 * 60 + 40, end: 15 * 60 + 30, cellIndex: 8, dayId: 1 }  // คาบ 8
-            ];
-            // หมายเหตุ: การใช้ cellIndex ต้องระวังเนื่องจากมี colspan/rowspan (อาจต้องปรับตามโครงสร้าง HTML จริง)
+schedule.forEach(slot => {
+    const row = tbody.insertRow();
+    
+    // คอลัมน์เวลา
+    let cell = row.insertCell();
+    cell.textContent = slot.time;
 
-            // ตัวอย่างแบบง่าย: หาแถวของวันปัจจุบัน
-            let dayIdMap = {
-                1: 'monday',
-                2: 'tuesday',
-                3: 'wednesday',
-                4: 'thursday',
-                5: 'friday'
-            };
+    // คอลัมน์วันต่างๆ
+    daysOfWeek.forEach((dayKey, index) => {
+        let cell = row.insertCell();
+        const subject = slot[dayKey] || "-";
+        cell.textContent = subject;
 
-            const dayRow = document.getElementById(dayIdMap[day]);
-            if (dayRow) {
-                const cells = dayRow.querySelectorAll('.class-cell');
-                let cellToHighlight = null;
+        // ไฮไลท์แถว/คอลัมน์พิเศษ (พัก/กลางวัน)
+        if (subject.includes("พักกลางวัน")) {
+            cell.classList.add('lunch-time');
+        } else if (subject.includes("พัก")) {
+            cell.classList.add('break-time');
+        }
 
-                // ตรวจสอบเวลาตามคาบเรียน (ต้องนับ cell index ให้ถูกตาม rowspan/colspan)
-                // ตารางนี้เริ่มที่ index 0 คือ day-header
-                // วันจันทร์: 1=1/2, 3=2, 4=3, (5=พัก/กลางวัน), 6=5, 7=6, 8=7, 9=8
-                let classTimesForDay = [
-                    { start: 8 * 60 + 40, end: 9 * 60 + 30, cellIndex: 0 }, // คาบ 1
+        // ไฮไลท์วันปัจจุบัน (index + 1 เพราะ JS นับวันจันทร์เป็น 1)
+        if (index + 1 === todayIndex) {
+            cell.classList.add('today');
+        }
+    });
+});
                     { start: 9 * 60 + 30, end: 10 * 60 + 20, cellIndex: 1 }, // คาบ 2
                     { start: 10 * 60 + 20, end: 11 * 60 + 10, cellIndex: 2 }, // คาบ 3
                     // พัก 11:10 - 12:00
