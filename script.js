@@ -1,39 +1,115 @@
-// ข้อมูลตารางเรียน: วิชาและเวลา (ตามที่แก้ไขล่าสุด)
+// script.js
+// ข้อมูลตารางเรียน: วิชา, ครู, ห้อง (ตามรูป ม. 3/2)
 const schedule = [
-    { time: "08:00 - 08:50", Mon: "โฮมรูม", Tue: "ไทย", Wed: "คณิต", Thu: "วิทย์", Fri: "อังกฤษ" },
-    { time: "08:50 - 09:40", Mon: "คณิต", Tue: "สังคม", Wed: "ไทย", Thu: "สุขศึกษา", Fri: "ศิลปะ" },
-    { time: "09:40 - 10:30", Mon: "วิทย์", Tue: "ศิลปะ", Wed: "คณิต", Thu: "อังกฤษ", Fri: "คอมพิวเตอร์" },
-    { time: "10:30 - 11:10", Mon: "พัก", Tue: "พัก", Wed: "พัก", Thu: "พัก", Fri: "พัก" },
-    { time: "11:10 - 12:00", Mon: "พักกลางวัน", Tue: "พักกลางวัน", Wed: "พักกลางวัน", Thu: "พักกลางวัน", Fri: "พักกลางวัน" },
-    { time: "12:00 - 12:50", Mon: "อังกฤษ", Tue: "วิทย์", Wed: "สังคม", Thu: "ไทย", Fri: "สังคม" },
-    { time: "12:50 - 13:40", Mon: "พละ", Tue: "คอมพิวเตอร์", Wed: "พละ", Thu: "แนะแนว", Fri: "พละ" },
-    { time: "13:40 - 14:30", Mon: "แนะแนว", Tue: "ลูกเสือ", Wed: "ชมรม", Thu: "พละ", Fri: "ว่าง" },
+    //      เวลา         | Mon              | Tue             | Wed             | Thu             | Fri
+    { time: "08:00 - 08:50", 
+        Mon: { subject: "โฮมรูม", teacher: "ครูทัศพร", room: "2307" }, 
+        Tue: { subject: "ท23102", teacher: "ครูชญาณิน", room: "2104" }, 
+        Wed: { subject: "ง23102", teacher: "ครูชวนใจ", room: "3305" }, 
+        Thu: { subject: "ว23205", teacher: "ครูธรรมนัย", room: "3305" }, 
+        Fri: { subject: "ส23102", teacher: "ครูพฤทธิมน", room: "2202" } 
+    },
+    { time: "08:50 - 09:40", 
+        Mon: { subject: "อ23102", teacher: "ครูทัศพร", room: "3308" }, 
+        Tue: { subject: "ว23102", teacher: "ครูจารุวรรณ", room: "3206" }, 
+        Wed: { subject: "ศ23102", teacher: "ครูศรีรา", room: "2104" }, 
+        Thu: { subject: "ค23102", teacher: "ครูเบญจพร", room: "3206" }, 
+        Fri: { subject: "คนคว้า", teacher: "ครูอิศระ", room: "" } 
+    },
+    { time: "09:40 - 10:30", 
+        Mon: { subject: "ค23206", teacher: "ครูธัญญกัลยา", room: "3305" }, 
+        Tue: { subject: "ว23102", teacher: "ครูจารุวรรณ", room: "3206" }, 
+        Wed: { subject: "ว23205", teacher: "ครูธรรมนัย", room: "3206" }, 
+        Thu: { subject: "ว23102", teacher: "ครูจารุวรรณ", room: "3206" }, 
+        Fri: { subject: "อ23102", teacher: "ครูทัศพร", room: "2307" } 
+    },
+    { time: "10:30 - 11:10", 
+        Mon: { subject: "พัก", teacher: "", room: "" }, 
+        Tue: { subject: "พัก", teacher: "", room: "" }, 
+        Wed: { subject: "พัก", teacher: "", room: "" }, 
+        Thu: { subject: "พัก", teacher: "", room: "" }, 
+        Fri: { subject: "พัก", teacher: "", room: "" } 
+    },
+    // ** พักกลางวันตามที่แจ้งคือ 11:10 - 12:00 **
+    { time: "11:10 - 12:00", 
+        Mon: { subject: "พักกลางวัน", teacher: "", room: "" }, 
+        Tue: { subject: "พักกลางวัน", teacher: "", room: "" }, 
+        Wed: { subject: "พักกลางวัน", teacher: "", room: "" }, 
+        Thu: { subject: "พักกลางวัน", teacher: "", room: "" }, 
+        Fri: { subject: "พักกลางวัน", teacher: "", room: "" } 
+    },
+    { time: "12:00 - 12:50", 
+        Mon: { subject: "ค23102", teacher: "ครูเบญจพร", room: "3304" }, 
+        Tue: { subject: "ค23204", teacher: "ครูอรวรรณ", room: "ซซบ2" }, 
+        Wed: { subject: "ส23102", teacher: "ครูศรีรา", room: "2202" }, 
+        Thu: { subject: "ค23206", teacher: "ครูธัญญกัลยา", room: "3308" }, 
+        Fri: { subject: "ส23206", teacher: "ครูพิมพิศา", room: "3206" } 
+    },
+    { time: "12:50 - 13:40", 
+        Mon: { subject: "ว23102", teacher: "ครูพฤทธิมน", room: "2202" }, 
+        Tue: { subject: "อ23102", teacher: "ครูทัศพร", room: "2307" }, 
+        Wed: { subject: "พ23104", teacher: "ครูปณิณ", room: "4203" }, 
+        Thu: { subject: "ศ23102", teacher: "ครูศรีรา", room: "3308" }, 
+        Fri: { subject: "ท23102", teacher: "ครูชญาณิน", room: "2104" } 
+    },
+    { time: "13:40 - 14:30", 
+        Mon: { subject: "พ23104", teacher: "ครูอิศระ", room: "2204" }, 
+        Tue: { subject: "กิจกรรม", teacher: "", room: "" }, 
+        Wed: { subject: "ว23282", teacher: "ครูปณิณ", room: "4203" }, 
+        Thu: { subject: "ชุมนุม", teacher: "", room: "" }, 
+        Fri: { subject: "ก23902", teacher: "ครูรุ่งเรือง", room: "2108" } 
+    },
+    { time: "14:30 - 15:20", 
+        Mon: { subject: "คนคว้า", teacher: "", room: "" }, 
+        Tue: { subject: "ว่าง", teacher: "", room: "" },
+        Wed: { subject: "กิจกรรม", teacher: "", room: "" },
+        Thu: { subject: "ว่าง", teacher: "", room: "" },
+        Fri: { subject: "สังคมและสาธารณประโยชน์", teacher: "", room: "" }
+    }
 ];
 
 const daysOfWeek = ["Mon", "Tue", "Wed", "Thu", "Fri"];
-// new Date().getDay() จะคืนค่า 0 (อาทิตย์) ถึง 6 (เสาร์)
-// เราต้องการ 1=จันทร์, 2=อังคาร, ..., 5=ศุกร์
 const todayIndex = new Date().getDay(); 
-
 const tbody = document.getElementById('timetable').getElementsByTagName('tbody')[0];
 
 schedule.forEach(slot => {
     const row = tbody.insertRow();
     
     // คอลัมน์เวลา
-    let cell = row.insertCell();
-    cell.textContent = slot.time;
+    let cellTime = row.insertCell();
+    cellTime.textContent = slot.time;
+    cellTime.classList.add('time-slot');
 
     // คอลัมน์วันต่างๆ
     daysOfWeek.forEach((dayKey, index) => {
         let cell = row.insertCell();
-        const subject = slot[dayKey] || "-";
-        cell.textContent = subject;
+        const data = slot[dayKey];
+        
+        // ตรวจสอบว่าเป็นคาบว่าง/กิจกรรม/พัก
+        if (data.subject.includes("พัก") || data.subject.includes("กิจกรรม") || data.subject.includes("ว่าง") || data.subject.includes("ชุมนุม") || data.subject.includes("คนคว้า") || data.subject.includes("สังคมและสาธารณประโยชน์")) {
+            cell.textContent = data.subject;
+            
+            if (data.subject.includes("พักกลางวัน")) {
+                cell.classList.add('lunch-time');
+            } else if (data.subject.includes("พัก")) {
+                cell.classList.add('break-time');
+            }
+        } else {
+            // ใส่ข้อมูลวิชา ครู และห้อง
+            cell.innerHTML = `
+                <strong>${data.subject}</strong><br>
+                ครู: ${data.teacher}<br>
+                ห้อง: ${data.room || '-'}
+            `;
+            cell.classList.add('class-cell');
+        }
 
-        // ไฮไลท์แถว/คอลัมน์พิเศษ (พัก/กลางวัน)
-        if (subject.includes("พักกลางวัน")) {
-            cell.classList.add('lunch-time');
-        } else if (subject.includes("พัก")) {
+        // ไฮไลท์วันปัจจุบัน (index + 1 เพราะ JS นับวันจันทร์เป็น 1)
+        if (index + 1 === todayIndex) {
+            cell.classList.add('today');
+        }
+    });
+});
             cell.classList.add('break-time');
         }
 
